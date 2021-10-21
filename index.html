@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>genpass-js</title>
+<body>
+
+<style type="text/css"><!--
+div.section { margin: 10px; }
+--></style>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+<!-- Downloaded from <https://gist.github.com/romeoh/3302256> -->
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript"><!--
+$(document).ready(function() {
+    const LENGTH = 20;
+
+    $('#generate').click(function() {
+        var master = $('#master').val();
+        var domain = $('#domain').val();
+
+        var result = b64_sha1(master + '|' + domain).substring(0, LENGTH);
+
+        navigator.clipboard.writeText(result).then(function() {
+            alert('copied to clipboard');
+        }, function() {
+            alert('failed to copy to clipboard');
+        });
+    });
+});
+--></script>
+
+<h1>genpass-js</h1>
+
+<div class="section">
+<div><label for="master">Master password</label></div>
+<div><input type="password" id="master"></input></div>
+</div>
+
+<div class="section">
+<div><label for="domain">Domain</label></div>
+<div><input type="text" id="domain"></input></div>
+</div>
+
+<div><button id="generate">Generate</button></div>
+
+</body>
