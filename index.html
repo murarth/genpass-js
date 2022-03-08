@@ -15,11 +15,25 @@ div.section { margin: 10px; }
 $(document).ready(function() {
     const LENGTH = 20;
 
-    $('#generate').click(function() {
-        var master = $('#master').val();
-        var domain = $('#domain').val();
+    if (sha1_vm_test()) {
+        $('#master,#domain,#length,#generate').prop('disabled', false);
+    } else {
+        $('#error').prop('hidden', false);
+        return;
+    }
 
-        var result = b64_sha1(master + '|' + domain).substring(0, LENGTH);
+    function utf8_encode(s) {
+        return encodeURI(s).replace(/%(..)/g, function(match, p1) {
+            return String.fromCharCode(parseInt(p1, 16));
+        });
+    }
+
+    $('#generate').click(function() {
+        var master = utf8_encode($('#master').val());
+        var domain = utf8_encode($('#domain').val());
+        var length = parseInt($('#length').val()) || LENGTH;
+
+        var result = b64_sha1(master + '|' + domain).substring(0, length);
 
         navigator.clipboard.writeText(result).then(function() {
             alert('copied to clipboard');
@@ -27,21 +41,39 @@ $(document).ready(function() {
             alert('failed to copy to clipboard');
         });
     });
+
+    $('#length').change(function() {
+        var value = $('#length').val();
+
+        $('#length-display').text(value);
+    }).change();
 });
 --></script>
 
 <h1>genpass-js</h1>
 
+<noscript><div class="section">JavaScript is required.</div></noscript>
+
+<div class="section" id="error" hidden>JavaScript SHA-1 test failed.</div>
+
 <div class="section">
 <div><label for="master">Master password</label></div>
-<div><input type="password" id="master"></input></div>
+<div><input type="password" id="master" disabled></input></div>
 </div>
 
 <div class="section">
 <div><label for="domain">Domain</label></div>
-<div><input type="text" id="domain"></input></div>
+<div><input type="text" id="domain" disabled></input></div>
 </div>
 
-<div><button id="generate">Generate</button></div>
+<div class="section">
+<div><label for="length">Length</label></div>
+<div>
+    <input type="range" id="length" value="20" min="8" max="24" disabled></input>
+    <span id="length-display"></span>
+</div>
+</div>
+
+<div><button id="generate" disabled>Generate</button></div>
 
 </body>
