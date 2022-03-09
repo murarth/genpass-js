@@ -14,9 +14,11 @@ div.section { margin: 10px; }
 <script type="text/javascript"><!--
 $(document).ready(function() {
     const LENGTH = 20;
+    const MIN_LENGTH = 8;
+    const MAX_LENGTH = 24;
 
     if (sha1_vm_test()) {
-        $('#master,#domain,#length,#generate').prop('disabled', false);
+        $('#master,#domain,#length,#length-inc,#length-dec,#generate').prop('disabled', false);
     } else {
         $('#error').prop('hidden', false);
         return;
@@ -36,7 +38,7 @@ $(document).ready(function() {
         var result = b64_sha1(master + '|' + domain).substring(0, length);
 
         navigator.clipboard.writeText(result).then(function() {
-            alert('copied to clipboard');
+            alert('password copied to clipboard');
         }, function() {
             alert('failed to copy to clipboard');
         });
@@ -47,6 +49,16 @@ $(document).ready(function() {
 
         $('#length-display').text(value);
     }).change();
+
+    $('#length-dec').click(function() {
+        var value = parseInt($('#length').val());
+        $('#length').val(Math.max(value - 1, MIN_LENGTH)).change();
+    });
+
+    $('#length-inc').click(function() {
+        var value = parseInt($('#length').val());
+        $('#length').val(Math.min(value + 1, MAX_LENGTH)).change();
+    });
 });
 --></script>
 
@@ -69,8 +81,10 @@ $(document).ready(function() {
 <div class="section">
 <div><label for="length">Length</label></div>
 <div>
+    <button id="length-dec" disabled>-</button>
     <input type="range" id="length" value="20" min="8" max="24" disabled></input>
     <span id="length-display"></span>
+    <button id="length-inc" disabled>+</button>
 </div>
 </div>
 
